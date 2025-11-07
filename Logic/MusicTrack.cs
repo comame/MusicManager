@@ -30,4 +30,7 @@ internal class  MusicTrack {
     public DateTime Modified { get; set; } = new();
     public DateTime Created { get; set; } = new();
     public ulong SizeBytes { get; set; } = 0;
+
+    // カスタム
+    public string PersistentID { get; set; } = "";
 }

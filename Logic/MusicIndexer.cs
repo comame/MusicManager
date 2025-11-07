@@ -7,9 +7,12 @@ using System.Threading;
 namespace MusicManager.Logic;
 
 class MusicIndexer {
+    public static string IndexFilePath => UserPreference.LibraryPath + "\\library.json";
+    public static string ITLFilePath => UserPreference.LibraryPath + "\\iTunes Music Library.xml";
+
     public static MusicLibrary? LoadFromIndexFile() {
         try {
-            using var f = new FileStream(UserPreference.LibraryPath + "\\music_index.json", FileMode.Open, FileAccess.Read);
+            using var f = new FileStream(IndexFilePath, FileMode.Open, FileAccess.Read);
             var library = MusicLibrary.FromJSONReader(f);
             return library;
         } catch (FileNotFoundException) {
@@ -41,6 +44,8 @@ class MusicIndexer {
 
             var file = files[i];
             var meta = GetMusicMetadata(file);
+            // Path はそうそう変わらないので、persistentID は Path から生成する
+            meta.PersistentID = ITLUtil.CalculatePersistentID(meta.Path);
             library.Tracks.Add(meta);
 
             if (i % 30 == 0) {
@@ -51,7 +56,7 @@ class MusicIndexer {
         library.FillTrackCount();
         library.SortByImportedDate();
 
-        using var f = new FileStream(UserPreference.LibraryPath + "\\music_index.json", FileMode.Create, FileAccess.Write);
+        using var f = new FileStream(IndexFilePath, FileMode.Create, FileAccess.Write);
         library.WriteJSON(f);
         f.Flush();
 
@@ -59,7 +64,7 @@ class MusicIndexer {
     }
 
     public static void GenerateITLFile(in MusicLibrary library) {
-        using var f = new StreamWriter(UserPreference.LibraryPath + "\\iTunes Music Library.xml", append: false);
+        using var f = new StreamWriter(ITLFilePath, append: false);
 
         ITLUtil.WriteLibraryXMLHeader(f);
         for (var i = 0; i < library.Tracks.Count; i++) {

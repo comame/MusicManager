@@ -45,7 +45,7 @@ namespace MusicManager.Logic {
                 BitRate = (int)m.Bitrate,
                 SampleRate = (int)m.SampleRate,
                 ArtworkCount = 1,
-                PersistentID = ITLUtil.CalculatePersistentID(m.Path), // Path はそうそう変わらないので、persistentID は Path から生成する
+                PersistentID = m.PersistentID,
                 Name = m.Name,
                 Artist = string.Join(",", m.Artists),
                 AlbumArtist = m.AlbumArtist,

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 
 namespace MusicManager.Logic;
 
 class MusicLibrary {
-    private List<MusicTrack> tracks = [];
-
-    public List<MusicTrack> Tracks {
-        get => tracks;
-    }
+    public List<MusicTrack> Tracks { get; set; } = [];
 
     public void FillTrackCount() {
         // アルバムキー -> tracks のインデックス
@@ -18,8 +15,8 @@ class MusicLibrary {
 
         // 楽曲をアルバムごとにまとめる
         // アルバムアーティストとアルバム名が一致したら、同一アルバムとみなす
-        for (var i = 0; i < tracks.Count; i++) {
-            var m = tracks[i];
+        for (var i = 0; i < Tracks.Count; i++) {
+            var m = Tracks[i];
             var albumKey = $"{m.AlbumArtist} - {m.AlbumTitle}";
             if (!albums.ContainsKey(albumKey)) {
                 albums[albumKey] = [];
@@ -31,7 +28,7 @@ class MusicLibrary {
         foreach (var key in albums.Keys) {
             var trackCountOfDisc = new Dictionary<int, int>(); // DiscNumber -> TrackCount
             foreach (var index in albums[key]) {
-                var m = tracks[index];
+                var m = Tracks[index];
                 var tn = m.DiscNumber;
                 if (!trackCountOfDisc.ContainsKey(tn)) {
                     trackCountOfDisc[tn] = 1;
@@ -41,32 +38,29 @@ class MusicLibrary {
             }
 
             foreach (var index in albums[key]) {
-                tracks[index].TrackCount = trackCountOfDisc[tracks[index].DiscNumber];
+                Tracks[index].TrackCount = trackCountOfDisc[Tracks[index].DiscNumber];
             }
         }
     }
 
     public void SortByImportedDate() {
-        tracks.Sort((a, b) => a.Imported.CompareTo(b.Imported));
+        Tracks.Sort((a, b) => a.Imported.CompareTo(b.Imported));
     }
 
     public void WriteJSON(Stream w) {
-        JsonSerializer.Serialize(w, tracks, new JsonSerializerOptions {
+        JsonSerializer.Serialize(w, this, new JsonSerializerOptions {
             WriteIndented = true,
         });
     }
 
     public static MusicLibrary? FromJSONReader(Stream r) {
         try {
-            var l = JsonSerializer.Deserialize<List<MusicTrack>>(r);
+            var l = JsonSerializer.Deserialize<MusicLibrary>(r);
             if (l == null) {
                 return null;
             }
 
-            var instance = new MusicLibrary();
-            instance.tracks = l;
-
-            return instance;
+            return l;
         } catch (Exception) {
             return null;
         }
