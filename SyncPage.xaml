@@ -8,7 +8,39 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid>
-        <TextBlock Text="Sync" />
-    </Grid>
+    <StackPanel>
+        <TextBlock
+            Text="同期"
+            Style="{ThemeResource SubtitleTextBlockStyle}"
+            Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+            Margin="0,0,0,16"
+        />
+
+        <Border
+            CornerRadius="4"
+            BorderThickness="1"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            Padding="16"
+            Margin="0,0,0,8"
+        >
+            <StackPanel>
+                <TextBlock
+                    Text="同期用サーバー"
+                    Margin="0,0,0,8"
+                    Style="{ThemeResource BodyTextBlockStyle}"
+                    Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                />
+                <TextBlock 
+                    x:Name="serverStatus"
+                    Text="停止中"
+                    VerticalAlignment="Center"
+                    Style="{ThemeResource CaptionTextBlockStyle}"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Margin="0,0,0,8"
+                />
+                <Button x:Name="serverStartButton" Content="起動" Click="StartButton_Click" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
 </Page>
