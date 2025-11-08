@@ -8,7 +8,7 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="1f53a59e-f31c-46d2-9db4-086c5c7ccbb5"
+    Name="comame.MusicManager"
     Publisher="CN=comame"
     Version="1.0.0.0" />
 
@@ -47,5 +47,6 @@
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
+    <Capability Name="internetClientServer"/>
   </Capabilities>
 </Package>
