@@ -52,7 +52,7 @@ class SyncServer {
             return;
         }
 
-        Debug.WriteLine($"request {req.Url.AbsolutePath}");
+        Debug.WriteLine($"request {req.Url!.AbsolutePath}");
 
         try {
             if (req.Url.AbsolutePath == "/library.json") {

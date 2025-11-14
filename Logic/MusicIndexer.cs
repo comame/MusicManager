@@ -102,7 +102,11 @@ class MusicIndexer {
             // DiscNumber は PartOfSet から取得する
 
             // オーディオ
-            // TODO: Format は拡張子から推測する
+            Format = Path.GetExtension(path).ToLowerInvariant() switch {
+                ".mp3" => "mp3",
+                ".m4a" => "m4a",
+                _ => throw new Exception("拡張子が未知"),
+            },
             Channels = (int)ps.GetUInt(NativePropertySystem.PKEY_Audio_ChannelCount),
             IsVBR = ps.GetBool(NativePropertySystem.PKEY_Audio_IsVariableBitRate),
             SampleRate = ps.GetUInt(NativePropertySystem.PKEY_Audio_SampleRate),

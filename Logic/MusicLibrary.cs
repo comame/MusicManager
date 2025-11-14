@@ -7,6 +7,7 @@ using System.Text.Json;
 namespace MusicManager.Logic;
 
 class MusicLibrary {
+    public DateTime Generated { get; set; } = DateTime.Now;
     public List<MusicTrack> Tracks { get; set; } = [];
 
     public void FillTrackCount() {

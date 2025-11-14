@@ -31,14 +31,16 @@
                     Style="{ThemeResource BodyTextBlockStyle}"
                     Foreground="{ThemeResource TextFillColorPrimaryBrush}"
                 />
-                <TextBlock 
-                    x:Name="serverStatus"
-                    Text="停止中"
-                    VerticalAlignment="Center"
-                    Style="{ThemeResource CaptionTextBlockStyle}"
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Margin="0,0,0,8"
-                />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock 
+                        x:Name="serverStatus"
+                        Text="停止中"
+                        VerticalAlignment="Center"
+                        Style="{ThemeResource CaptionTextBlockStyle}"
+                        Foreground="MediumVioletRed"
+                        Margin="0,0,0,8"
+                    />
+                </StackPanel>
                 <Button x:Name="serverStartButton" Content="起動" Click="StartButton_Click" />
             </StackPanel>
         </Border>
