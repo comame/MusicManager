@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace MusicManager.Logic;
 
-class MusicIndexer {
+public class MusicIndexer {
     public static string IndexFilePath => UserPreference.LibraryPath + "\\library.json";
     public static string ITLFilePath => UserPreference.LibraryPath + "\\iTunes Music Library.xml";
 
@@ -76,6 +76,9 @@ class MusicIndexer {
         f.Flush();
     }
 
+    /// <summary>
+    /// 指定したディレクトリ内の音楽ファイルのフルパスのリストを返す。
+    /// </summary>
     private static List<string> FindMusicFiles(string directory) {
         var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".mp3", ".m4a" };
         var files = Directory.EnumerateFiles(directory, "*.*", SearchOption.AllDirectories)
@@ -133,5 +136,21 @@ class MusicIndexer {
         }
 
         return m;
+    }
+
+    public static string convertWindowsFullPathToRelativePath(string full, string parent)
+    {
+        var fullUri = new Uri(full);
+        var parentUri = new Uri(parent.EndsWith("\\") ? parent : parent + "\\");
+        var relativeUri = parentUri.MakeRelativeUri(fullUri);
+        return Uri.UnescapeDataString(relativeUri.ToString().Replace('/', '\\'));
+    }
+
+    public static string convertRelativePathToWindowsFullPath(string relative, string parent)
+    {
+        var parentUri = new Uri(parent.EndsWith("\\") ? parent : parent + "\\");
+        var fullUri = new Uri(parentUri, relative);
+        return fullUri.LocalPath;
+
     }
 }

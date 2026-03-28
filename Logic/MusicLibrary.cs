@@ -6,10 +6,13 @@ using System.Text.Json;
 
 namespace MusicManager.Logic;
 
-class MusicLibrary {
+public class MusicLibrary {
     public DateTime Generated { get; set; } = DateTime.Now;
     public List<MusicTrack> Tracks { get; set; } = [];
 
+    /// <summary>
+    /// このライブラリの TrackCount を埋める。
+    /// </summary>
     public void FillTrackCount() {
         // アルバムキー -> tracks のインデックス
         Dictionary<string, List<int>> albums = [];
@@ -48,12 +51,18 @@ class MusicLibrary {
         Tracks.Sort((a, b) => a.Imported.CompareTo(b.Imported));
     }
 
+    /// <summary>
+    /// Stream にこの MusicLibrary を書き出す
+    /// </summary>
     public void WriteJSON(Stream w) {
         JsonSerializer.Serialize(w, this, new JsonSerializerOptions {
             WriteIndented = true,
         });
     }
 
+    /// <summary>
+    ///     Stream から MusicLibrary のインスタンスを作成する
+    /// </summary>
     public static MusicLibrary? FromJSONReader(Stream r) {
         try {
             var l = JsonSerializer.Deserialize<MusicLibrary>(r);

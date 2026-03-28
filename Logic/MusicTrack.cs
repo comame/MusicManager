@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MusicManager.Logic;
 
-internal class  MusicTrack {
+public class  MusicTrack {
     // タグ
     public string Name { get; set; } = "";
     public string AlbumArtist { get; set; } = "";
