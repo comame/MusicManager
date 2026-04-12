@@ -1,6 +1,9 @@
 using System.Runtime.Versioning;
 
 public class MusicIndexer {
+    /// <summary>
+    /// ライブラリの存在するディレクトリ (library.jsonが存在するディレクトリ) から MusicLibrary を読み込む
+    /// </summary>
     public static MusicLibrary? LoadFromIndexFile(string libraryPath) {
         try {
             using var f = new FileStream(IndexFilePath(libraryPath), FileMode.Open, FileAccess.Read);
@@ -57,6 +60,9 @@ public class MusicIndexer {
         return library;
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     public static void GenerateITLFile(in MusicLibrary library, string libraryPath) {
         using var f = new StreamWriter(ITLFilePath(libraryPath), append: false);
 
@@ -85,8 +91,9 @@ public class MusicIndexer {
         return files;
     }
 
-    // 音楽ファイルからメタデータを取得する。
-    // ファイル単体から推測できない、TrackNumber は取得しない。
+    /// <summary>
+    /// 指定した音楽ファイルのメタデータを取得する。ファイル単体から推測できない、TrackNumber は取得しない。
+    /// </summary>
     [SupportedOSPlatform("windows")]
     private static MusicTrack GetMusicMetadata(string fullPath, string libraryPath) {
         using var ps = PropertyStore.Open(fullPath);
@@ -140,6 +147,9 @@ public class MusicIndexer {
     public static string IndexFilePath(string libraryPath) => libraryPath + "\\library.json";
     public static string ITLFilePath(string libraryPath) => libraryPath + "\\iTunes Music Library.xml";
 
+    /// <summary>
+    ///  Windowsのフルパスを相対パスに変換する
+    /// </summary>
     public static string ConvertWindowsFullPathToRelativePath(string full, string parent) {
         var fullUri = new Uri(full);
         var parentUri = new Uri(parent.EndsWith("\\") ? parent : parent + "\\");
@@ -147,6 +157,9 @@ public class MusicIndexer {
         return Uri.UnescapeDataString(relativeUri.ToString().Replace('/', '\\'));
     }
 
+    /// <summary>
+    /// 相対パスを Windows のフルパスに変換する
+    /// </summary>
     public static string ConvertRelativePathToWindowsFullPath(string relative, string parent) {
         var parentUri = new Uri(parent.EndsWith("\\") ? parent : parent + "\\");
         var fullUri = new Uri(parentUri, relative);
