@@ -18,7 +18,7 @@ namespace MusicManager
             ExtendsContentIntoTitleBar = true;
 
             AppWindow.ResizeClient(new Windows.Graphics.SizeInt32(800, 600));
-            var pos = new UserPreference().WindowPosition();
+            var pos = UserPreference.self.WindowPosition();
             if (pos != null)
             {
                 AppWindow.Move(new Windows.Graphics.PointInt32(pos.Value.Item1, pos.Value.Item2));
@@ -29,7 +29,7 @@ namespace MusicManager
                 if (args.DidPositionChange)
                 {
                     var p = AppWindow.Position;
-                    new UserPreference().SetWindowPosition((p.X, p.Y));
+                    UserPreference.self.SetWindowPosition((p.X, p.Y));
                 }
             };
 

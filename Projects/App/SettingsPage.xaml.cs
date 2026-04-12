@@ -17,7 +17,7 @@ namespace MusicManager
         {
             InitializeComponent();
 
-            libraryPlacePickerText.Text = new UserPreference().LibraryPath();
+            libraryPlacePickerText.Text = UserPreference.self.LibraryPath();
         }
 
         private async void LibraryPlacePickerButtonClick(object sender, RoutedEventArgs e)
@@ -33,7 +33,7 @@ namespace MusicManager
             }
 
             libraryPlacePickerText.Text = folder.Path;
-            new UserPreference().SetLibraryPath(folder.Path);
+            UserPreference.self.SetLibraryPath(folder.Path);
 
             libraryPlacePickerButton.IsEnabled = true;
         }
@@ -43,8 +43,8 @@ namespace MusicManager
             var dialog = new ContentDialog()
             {
                 XamlRoot = XamlRoot,
-                PrimaryButtonText = "ƒŠƒZƒbƒg‚·‚é",
-                CloseButtonText = "ƒLƒƒƒ“ƒZƒ‹",
+                PrimaryButtonText = "ï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½ï¿½",
+                CloseButtonText = "ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½",
                 DefaultButton = ContentDialogButton.Primary,
             };
 
@@ -55,7 +55,7 @@ namespace MusicManager
             }
 
 
-            new UserPreference().ClearAll();
+            UserPreference.self.ClearAll();
             Frame.Navigate(typeof(SettingsPage));
         }
     }

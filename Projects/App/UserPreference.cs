@@ -8,6 +8,7 @@ namespace MusicManager;
 
 internal class UserPreference : IUserPreference
 {
+    public static UserPreference self = new();
 
     public string LibraryPath()
     {

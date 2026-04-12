@@ -1,11 +1,7 @@
-using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using MusicManager.Logic;
-using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +24,7 @@ internal sealed partial class LibraryPage : Page
 
         IndexViewModel.Library = MusicIndexer.LoadFromIndexFile();
 
-        var musicCount = MusicIndexer.CountMusicFiles(new UserPreference().LibraryPath());
+        var musicCount = MusicIndexer.CountMusicFiles(UserPreference.self.LibraryPath());
         targetFileCountText.Text = $"{musicCount} 件の音楽ファイル";
     }
 
