@@ -141,14 +141,14 @@ public class MusicIndexer {
         return m;
     }
 
-    public static string convertWindowsFullPathToRelativePath(string full, string parent) {
+    public static string ConvertWindowsFullPathToRelativePath(string full, string parent) {
         var fullUri = new Uri(full);
         var parentUri = new Uri(parent.EndsWith("\\") ? parent : parent + "\\");
         var relativeUri = parentUri.MakeRelativeUri(fullUri);
         return Uri.UnescapeDataString(relativeUri.ToString().Replace('/', '\\'));
     }
 
-    public static string convertRelativePathToWindowsFullPath(string relative, string parent) {
+    public static string ConvertRelativePathToWindowsFullPath(string relative, string parent) {
         var parentUri = new Uri(parent.EndsWith("\\") ? parent : parent + "\\");
         var fullUri = new Uri(parentUri, relative);
         return fullUri.LocalPath;

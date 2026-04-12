@@ -1,5 +1,6 @@
 using System.Text;
 
+
 internal class ITLTrack {
     public int TrackID = 0;
     public ulong Size = 0;
@@ -102,7 +103,7 @@ internal class ITLTrack {
     }
 }
 
-internal class ITLUtil {
+public class ITLUtil {
     public static long CalculateAppleEpoc(in DateTime dt) {
         var appleEpoc = dt.AddYears(66);
         var unixEpoc = ((DateTimeOffset)appleEpoc).ToUnixTimeSeconds();
