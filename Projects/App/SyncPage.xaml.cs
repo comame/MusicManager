@@ -1,6 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using MusicManager.Logic;
+using Microsoft.UI.Xaml.Media;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -31,7 +31,7 @@ namespace MusicManager
                 srv = null;
                 serverStartButton.Content = "‹N“®";
                 serverStatus.Text = "’âŽ~’†";
-                serverStatus.Foreground = Color.AsSolidColorBrush("MediumVioletRed");
+                serverStatus.Foreground = AsSolidColorBrush("MediumVioletRed");
                 return;
             }
 
@@ -39,7 +39,12 @@ namespace MusicManager
             srv.Listen();
             serverStartButton.Content = "’âŽ~";
             serverStatus.Text = "‹N“®’†";
-            serverStatus.Foreground = Color.AsSolidColorBrush("LightSeaGreen");
+            serverStatus.Foreground = AsSolidColorBrush("LightSeaGreen");
+        }
+        private static Brush AsSolidColorBrush(string colorName)
+        {
+            var color = System.Drawing.Color.FromName(colorName);
+            return new SolidColorBrush(Windows.UI.Color.FromArgb(color.A, color.R, color.G, color.B));
         }
     }
 }
