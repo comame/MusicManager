@@ -27,7 +27,7 @@ internal class ITLTrack {
     public string Kind = "";
     public string Location = "";
 
-    public static ITLTrack FromMusicMetadata(MusicTrack m, int trackID) {
+    public static ITLTrack FromMusicMetadata(MusicTrack m, int trackID, string fullPath) {
         var track = new ITLTrack() {
             TrackID = trackID,
             Size = m.SizeBytes,
@@ -48,7 +48,7 @@ internal class ITLTrack {
             AlbumArtist = m.AlbumArtist,
             Album = m.AlbumTitle,
             Genre = string.Join(",", m.Genre),
-            Location = ITLUtil.ConvertPathToLocation(m.Path),
+            Location = ITLUtil.ConvertPathToLocation(fullPath),
         };
 
         return track;
@@ -110,8 +110,8 @@ public class ITLUtil {
         return unixEpoc;
     }
 
-    public static string ConvertPathToLocation(string path) {
-        var parts = path.Split("\\");
+    public static string ConvertPathToLocation(string fullPath) {
+        var parts = fullPath.Split("\\");
         var location = "file://localhost";
 
         for (var i = 0; i < parts.Count(); i++) {
@@ -163,7 +163,7 @@ public class ITLUtil {
         w.Write(s);
     }
 
-    public static void WriteLibraryXMLFooter(StreamWriter w, string musicFolder) {
+    public static void WriteLibraryXMLFooter(StreamWriter w, string musicFolderFullPath) {
         var s = "";
 
         s += "\t</dict>\n";
@@ -173,7 +173,7 @@ public class ITLUtil {
         s += "\t<array>\n";
         s += "\t</array>\n";
 
-        s += $"\t<key>Music Folder</key><string>{EscapeXMLString(ConvertPathToLocation(musicFolder))}/</string>\n";
+        s += $"\t<key>Music Folder</key><string>{EscapeXMLString(ConvertPathToLocation(musicFolderFullPath))}/</string>\n";
         s += "</dict>\n";
         s += "</plist>\n";
 

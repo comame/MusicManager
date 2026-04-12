@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 public class MusicLibrary {
@@ -51,6 +52,7 @@ public class MusicLibrary {
     public void WriteJSON(Stream w) {
         JsonSerializer.Serialize(w, this, new JsonSerializerOptions {
             WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         });
     }
 

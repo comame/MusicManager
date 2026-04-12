@@ -37,7 +37,7 @@ public class MusicIndexer {
             }
 
             var file = files[i];
-            var meta = GetMusicMetadata(file);
+            var meta = GetMusicMetadata(file, libraryPath);
             // Path はそうそう変わらないので、persistentID は Path から生成する
             meta.PersistentID = ITLUtil.CalculatePersistentID(meta.Path);
             library.Tracks.Add(meta);
@@ -62,7 +62,11 @@ public class MusicIndexer {
 
         ITLUtil.WriteLibraryXMLHeader(f);
         for (var i = 0; i < library.Tracks.Count; i++) {
-            var t = ITLTrack.FromMusicMetadata(library.Tracks[i], i);
+            var t = ITLTrack.FromMusicMetadata(
+                library.Tracks[i],
+                i,
+                ConvertRelativePathToWindowsFullPath(library.Tracks[i].Path, libraryPath)
+            );
             t.WriteTo(f);
         }
         ITLUtil.WriteLibraryXMLFooter(f, libraryPath);
@@ -84,8 +88,8 @@ public class MusicIndexer {
     // 音楽ファイルからメタデータを取得する。
     // ファイル単体から推測できない、TrackNumber は取得しない。
     [SupportedOSPlatform("windows")]
-    private static MusicTrack GetMusicMetadata(string path) {
-        using var ps = PropertyStore.Open(path);
+    private static MusicTrack GetMusicMetadata(string fullPath, string libraryPath) {
+        using var ps = PropertyStore.Open(fullPath);
 
         var m = new MusicTrack() {
             // タグ
@@ -100,7 +104,7 @@ public class MusicIndexer {
             // DiscNumber は PartOfSet から取得する
 
             // オーディオ
-            Format = Path.GetExtension(path).ToLowerInvariant() switch {
+            Format = Path.GetExtension(fullPath).ToLowerInvariant() switch {
                 ".mp3" => "mp3",
                 ".m4a" => "m4a",
                 _ => throw new Exception("拡張子が未知"),
@@ -112,7 +116,7 @@ public class MusicIndexer {
             Imported = ps.GetDateTime(NativePropertySystem.PKey_DateImported), // コンテンツの作成日; おおむね追加日として使用する
 
             // ファイル
-            Path = path,
+            Path = ConvertWindowsFullPathToRelativePath(fullPath, libraryPath),
             Modified = ps.GetDateTime(NativePropertySystem.PKEY_DateModified),
             Created = ps.GetDateTime(NativePropertySystem.PKEY_DateCreated),
             SizeBytes = ps.GetUlong(NativePropertySystem.PKEY_Size),

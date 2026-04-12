@@ -77,14 +77,14 @@ public class SyncServer {
             throw new FileNotFoundException();
         }
 
-        RespondWithFile(res, track.Path);
+        RespondWithFile(res, MusicIndexer.ConvertRelativePathToWindowsFullPath(track.Path, libraryPath));
     }
 
-    private static void RespondWithFile(HttpListenerResponse res, string filePath) {
-        using var f = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+    private static void RespondWithFile(HttpListenerResponse res, string fullPath) {
+        using var f = new FileStream(fullPath, FileMode.Open, FileAccess.Read);
 
         var contentType = "application/octet-stream";
-        switch (Path.GetExtension(filePath).ToLower()) {
+        switch (Path.GetExtension(fullPath).ToLower()) {
             case ".json":
                 contentType = "application/json";
                 break;
