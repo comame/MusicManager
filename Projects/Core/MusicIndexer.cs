@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
 
-public class MusicIndexer {
+public class MusicIndexer
+{
     public static string IndexFilePath => userPreference.LibraryPath() + "\\library.json";
     public static string ITLFilePath => userPreference.LibraryPath() + "\\iTunes Music Library.xml";
 
@@ -14,17 +10,22 @@ public class MusicIndexer {
     [MemberNotNull(nameof(userPreference))]
     public static void SetUserPreference(IUserPreference p) { userPreference = p; }
 
-    public static MusicLibrary? LoadFromIndexFile() {
-        try {
+    public static MusicLibrary? LoadFromIndexFile()
+    {
+        try
+        {
             using var f = new FileStream(IndexFilePath, FileMode.Open, FileAccess.Read);
             var library = MusicLibrary.FromJSONReader(f);
             return library;
-        } catch (FileNotFoundException) {
+        }
+        catch (FileNotFoundException)
+        {
             return null;
         }
     }
 
-    public static int CountMusicFiles(string searchDirectory) {
+    public static int CountMusicFiles(string searchDirectory)
+    {
         var files = FindMusicFiles(searchDirectory);
         return files.Count;
     }
@@ -32,17 +33,21 @@ public class MusicIndexer {
     public static MusicLibrary? UpdateIndex(
         Action<double> onProgress,
         in CancellationToken ctx
-    ) {
+    )
+    {
         var files = FindMusicFiles(userPreference.LibraryPath());
-        if (files.Count == 0) {
+        if (files.Count == 0)
+        {
             return null;
         }
 
         // インデックスし直すので、ライブラリは新規作成してよい
         var library = new MusicLibrary();
 
-        for (var i = 0; i < files.Count; i++) {
-            if (ctx.IsCancellationRequested) {
+        for (var i = 0; i < files.Count; i++)
+        {
+            if (ctx.IsCancellationRequested)
+            {
                 return null;
             }
 
@@ -52,7 +57,8 @@ public class MusicIndexer {
             meta.PersistentID = ITLUtil.CalculatePersistentID(meta.Path);
             library.Tracks.Add(meta);
 
-            if (i % 30 == 0) {
+            if (i % 30 == 0)
+            {
                 onProgress((double)i / files.Count * 100);
             }
         }
@@ -67,11 +73,13 @@ public class MusicIndexer {
         return library;
     }
 
-    public static void GenerateITLFile(in MusicLibrary library) {
+    public static void GenerateITLFile(in MusicLibrary library)
+    {
         using var f = new StreamWriter(ITLFilePath, append: false);
 
         ITLUtil.WriteLibraryXMLHeader(f);
-        for (var i = 0; i < library.Tracks.Count; i++) {
+        for (var i = 0; i < library.Tracks.Count; i++)
+        {
             var t = ITLTrack.FromMusicMetadata(library.Tracks[i], i);
             t.WriteTo(f);
         }
@@ -83,7 +91,8 @@ public class MusicIndexer {
     /// <summary>
     /// 指定したディレクトリ内の音楽ファイルのフルパスのリストを返す。
     /// </summary>
-    private static List<string> FindMusicFiles(string directory) {
+    private static List<string> FindMusicFiles(string directory)
+    {
         var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".mp3", ".m4a" };
         var files = Directory.EnumerateFiles(directory, "*.*", SearchOption.AllDirectories)
             .Where(file => extensions.Contains(Path.GetExtension(file)))
@@ -93,10 +102,12 @@ public class MusicIndexer {
 
     // 音楽ファイルからメタデータを取得する。
     // ファイル単体から推測できない、TrackNumber は取得しない。
-    private static MusicTrack GetMusicMetadata(string path) {
+    private static MusicTrack GetMusicMetadata(string path)
+    {
         using var ps = PropertyStore.Open(path);
 
-        var m = new MusicTrack() {
+        var m = new MusicTrack()
+        {
             // タグ
             Name = ps.GetString(NativePropertySystem.PKEY_Title),
             AlbumArtist = ps.GetString(NativePropertySystem.PKEY_Music_AlbumArtist),
@@ -109,7 +120,8 @@ public class MusicIndexer {
             // DiscNumber は PartOfSet から取得する
 
             // オーディオ
-            Format = Path.GetExtension(path).ToLowerInvariant() switch {
+            Format = Path.GetExtension(path).ToLowerInvariant() switch
+            {
                 ".mp3" => "mp3",
                 ".m4a" => "m4a",
                 _ => throw new Exception("拡張子が未知"),
@@ -130,11 +142,14 @@ public class MusicIndexer {
         // DiscNumeber, DiscCount を PartOfSet から取得する
         var partOfSet = ps.GetString(NativePropertySystem.PKEY_Music_PartOfSet);
         var partOfSetSplit = partOfSet.Split('/');
-        if (partOfSetSplit.Length == 2) {
-            if (int.TryParse(partOfSetSplit[0], out int discNumber)) {
+        if (partOfSetSplit.Length == 2)
+        {
+            if (int.TryParse(partOfSetSplit[0], out int discNumber))
+            {
                 m.DiscNumber = discNumber;
             }
-            if (int.TryParse(partOfSetSplit[1], out int discCount)) {
+            if (int.TryParse(partOfSetSplit[1], out int discCount))
+            {
                 m.DiscCount = discCount;
             }
         }

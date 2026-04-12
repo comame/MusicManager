@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace MusicManager;
 
-internal class UserPreference : IUserPreference {
+internal class UserPreference : IUserPreference
+{
 
     public string LibraryPath()
     {
@@ -22,7 +23,8 @@ internal class UserPreference : IUserPreference {
     {
         object x = Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionX"];
         object y = Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionY"];
-        if (x == null || y == null) {
+        if (x == null || y == null)
+        {
             return null;
         }
         return ((int)x, (int)y);
@@ -34,20 +36,24 @@ internal class UserPreference : IUserPreference {
         Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionY"] = position.Item2;
     }
 
-    public void ClearAll() {
+    public void ClearAll()
+    {
         Windows.Storage.ApplicationData.Current.LocalSettings.Values.Clear();
     }
 
-    private static string StringGetter(string key, string defaultValue) {
+    private static string StringGetter(string key, string defaultValue)
+    {
         var current = Windows.Storage.ApplicationData.Current.LocalSettings.Values[key];
-        if (current == null) {
+        if (current == null)
+        {
             return defaultValue;
         }
 
         return (string)current;
     }
 
-    private static void StringSetter(string key, string value) {
+    private static void StringSetter(string key, string value)
+    {
         Windows.Storage.ApplicationData.Current.LocalSettings.Values[key] = value;
     }
 }

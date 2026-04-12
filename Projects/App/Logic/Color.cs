@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace MusicManager.Logic;
 
-class Color {
-    public static Brush AsSolidColorBrush(string colorName) {
+class Color
+{
+    public static Brush AsSolidColorBrush(string colorName)
+    {
         var color = System.Drawing.Color.FromName(colorName);
         return new SolidColorBrush(Windows.UI.Color.FromArgb(color.A, color.R, color.G, color.B));
     }

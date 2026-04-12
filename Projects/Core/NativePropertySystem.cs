@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
- public partial class NativePropertySystem
+public partial class NativePropertySystem
 {
     public enum HRESULT : long
     {
