@@ -6,8 +6,13 @@ public class MusicIndexer {
     /// </summary>
     public static MusicLibrary? LoadFromIndexFile(string libraryPath) {
         try {
-            using var f = new FileStream(IndexFilePath(libraryPath), FileMode.Open, FileAccess.Read);
-            var library = MusicLibrary.FromJSONReader(f);
+            // IndexFilePath を取るだけのインスタンス
+            var temporaryLib = new MusicLibrary {
+                LibraryPath = libraryPath
+            };
+
+            using var f = new FileStream(temporaryLib.IndexFilePath, FileMode.Open, FileAccess.Read);
+            var library = MusicLibrary.FromJSONReader(f, libraryPath);
             return library;
         }
         catch (FileNotFoundException) {
@@ -22,7 +27,7 @@ public class MusicIndexer {
 
     [SupportedOSPlatform("windows")]
     public static MusicLibrary? UpdateIndex(
-        string libraryPath,
+        string libraryPath, // FIXME: いずれ消したいが、どうせライブラリ更新時に消えるのでいったん許容
         Action<double> onProgress,
         in CancellationToken ctx
     ) {
@@ -32,7 +37,9 @@ public class MusicIndexer {
         }
 
         // インデックスし直すので、ライブラリは新規作成してよい
-        var library = new MusicLibrary();
+        var library = new MusicLibrary {
+            LibraryPath = libraryPath
+        };
 
         for (var i = 0; i < files.Count; i++) {
             if (ctx.IsCancellationRequested) {
@@ -40,9 +47,10 @@ public class MusicIndexer {
             }
 
             var file = files[i];
-            var meta = GetMusicMetadata(file, libraryPath);
+            var meta = GetMusicMetadata(file);
             // Path はそうそう変わらないので、persistentID は Path から生成する
             meta.PersistentID = ITLUtil.CalculatePersistentID(meta.Path);
+            meta.Path = library.GetTrackRelativePath(file);
             library.Tracks.Add(meta);
 
             if (i % 30 == 0) {
@@ -53,7 +61,7 @@ public class MusicIndexer {
         library.FillTrackCount();
         library.SortByImportedDate();
 
-        using var f = new FileStream(IndexFilePath(libraryPath), FileMode.Create, FileAccess.Write);
+        using var f = new FileStream(library.IndexFilePath, FileMode.Create, FileAccess.Write);
         library.WriteJSON(f);
         f.Flush();
 
@@ -61,21 +69,21 @@ public class MusicIndexer {
     }
 
     /// <summary>
-    ///
+    /// ITLファイルを書き出す
     /// </summary>
-    public static void GenerateITLFile(in MusicLibrary library, string libraryPath) {
-        using var f = new StreamWriter(ITLFilePath(libraryPath), append: false);
+    public static void GenerateITLFile(in MusicLibrary library) {
+        using var f = new StreamWriter(library.ITLFilePath, append: false);
 
         ITLUtil.WriteLibraryXMLHeader(f);
         for (var i = 0; i < library.Tracks.Count; i++) {
             var t = ITLTrack.FromMusicMetadata(
                 library.Tracks[i],
                 i,
-                ConvertRelativePathToWindowsFullPath(library.Tracks[i].Path, libraryPath)
+                library.GetTrackFileFullPath(library.Tracks[i])
             );
             t.WriteTo(f);
         }
-        ITLUtil.WriteLibraryXMLFooter(f, libraryPath);
+        ITLUtil.WriteLibraryXMLFooter(f, library.LibraryPath);
 
         f.Flush();
     }
@@ -92,10 +100,13 @@ public class MusicIndexer {
     }
 
     /// <summary>
-    /// 指定した音楽ファイルのメタデータを取得する。ファイル単体から推測できない、TrackNumber は取得しない。
+    /// 指定した音楽ファイルのメタデータを取得する。
+    /// ファイル単体から推測できない、これらの値は取得しない:
+    ///   - TrackNumber (アルバムごとの集計が必要)
+    ///   - Path (ライブラリからの相対パスを計算する必要がある)
     /// </summary>
     [SupportedOSPlatform("windows")]
-    private static MusicTrack GetMusicMetadata(string fullPath, string libraryPath) {
+    private static MusicTrack GetMusicMetadata(string fullPath) {
         using var ps = PropertyStore.Open(fullPath);
 
         var m = new MusicTrack() {
@@ -123,7 +134,6 @@ public class MusicIndexer {
             Imported = ps.GetDateTime(NativePropertySystem.PKey_DateImported), // コンテンツの作成日; おおむね追加日として使用する
 
             // ファイル
-            Path = ConvertWindowsFullPathToRelativePath(fullPath, libraryPath),
             Modified = ps.GetDateTime(NativePropertySystem.PKEY_DateModified),
             Created = ps.GetDateTime(NativePropertySystem.PKEY_DateCreated),
             SizeBytes = ps.GetUlong(NativePropertySystem.PKEY_Size),
@@ -142,28 +152,5 @@ public class MusicIndexer {
         }
 
         return m;
-    }
-
-    public static string IndexFilePath(string libraryPath) => libraryPath + "\\library.json";
-    public static string ITLFilePath(string libraryPath) => libraryPath + "\\iTunes Music Library.xml";
-
-    /// <summary>
-    ///  Windowsのフルパスを相対パスに変換する
-    /// </summary>
-    public static string ConvertWindowsFullPathToRelativePath(string full, string parent) {
-        var fullUri = new Uri(full);
-        var parentUri = new Uri(parent.EndsWith("\\") ? parent : parent + "\\");
-        var relativeUri = parentUri.MakeRelativeUri(fullUri);
-        return Uri.UnescapeDataString(relativeUri.ToString().Replace('/', '\\'));
-    }
-
-    /// <summary>
-    /// 相対パスを Windows のフルパスに変換する
-    /// </summary>
-    public static string ConvertRelativePathToWindowsFullPath(string relative, string parent) {
-        var parentUri = new Uri(parent.EndsWith("\\") ? parent : parent + "\\");
-        var fullUri = new Uri(parentUri, relative);
-        return fullUri.LocalPath;
-
     }
 }

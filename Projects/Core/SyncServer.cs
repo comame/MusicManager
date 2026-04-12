@@ -4,17 +4,14 @@ using System.Net;
 public class SyncServer {
     private readonly HttpListener listener;
     private readonly MusicLibrary library;
-    private readonly string libraryPath;
 
-    public SyncServer(MusicLibrary library, string libraryPath) {
+    public SyncServer(MusicLibrary library) {
         this.library = library;
 
         listener = new();
         // netsh http add urlacl url=http://*:9000/ user=comame
         listener.Prefixes.Add("http://*:9000/");
         listener.IgnoreWriteExceptions = true;
-
-        this.libraryPath = libraryPath;
     }
 
     public async void Listen() {
@@ -52,7 +49,7 @@ public class SyncServer {
 
         try {
             if (req.Url.AbsolutePath == "/library.json") {
-                RespondWithFile(res, MusicIndexer.IndexFilePath(libraryPath));
+                RespondWithFile(res, library.IndexFilePath);
                 return;
             }
             if (req.Url.AbsolutePath.StartsWith("/track/")) {
@@ -77,7 +74,7 @@ public class SyncServer {
             throw new FileNotFoundException();
         }
 
-        RespondWithFile(res, MusicIndexer.ConvertRelativePathToWindowsFullPath(track.Path, libraryPath));
+        RespondWithFile(res, library.GetTrackFileFullPath(track));
     }
 
     private static void RespondWithFile(HttpListenerResponse res, string fullPath) {

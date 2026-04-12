@@ -2,6 +2,33 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 
 public class MusicLibrary {
+
+    private string _libraryPath = "";
+
+    /// <summary>
+    /// library.jsonの存在するディレクトリのフルパス
+    /// </summary>
+    public string LibraryPath {
+        get {
+            if (_libraryPath == "") {
+                throw new InvalidOperationException("LibraryPath is not set");
+            }
+            return _libraryPath;
+        }
+        set => _libraryPath = value;
+    }
+
+    public string IndexFilePath {
+        get => LibraryPath + "\\library.json";
+    }
+
+    public string ITLFilePath {
+        get => LibraryPath + "\\iTunes Music Library.xml";
+    }
+
+    /// <summary>
+    /// この MusicLibrary が生成された日時
+    /// </summary>
     public DateTime Generated { get; set; } = DateTime.Now;
     public List<MusicTrack> Tracks { get; set; } = [];
 
@@ -59,17 +86,37 @@ public class MusicLibrary {
     /// <summary>
     ///     Stream から MusicLibrary のインスタンスを作成する
     /// </summary>
-    public static MusicLibrary? FromJSONReader(Stream r) {
+    public static MusicLibrary? FromJSONReader(Stream r, string libraryPath) {
         try {
             var l = JsonSerializer.Deserialize<MusicLibrary>(r);
             if (l == null) {
                 return null;
             }
+            l.LibraryPath = libraryPath;
 
             return l;
         }
         catch (Exception) {
             return null;
         }
+    }
+
+    /// <summary>
+    /// MusicTrackのフルパスを取得する
+    /// </summary>
+    public string GetTrackFileFullPath(in MusicTrack track) {
+            var parentUri = new Uri(LibraryPath.EndsWith("\\") ? LibraryPath : LibraryPath + "\\");
+        var fullUri = new Uri(parentUri, track.Path);
+        return fullUri.LocalPath;
+    }
+
+    /// <summary>
+    /// MusicTrackの相対パスを求める
+    /// </summary>
+    public string GetTrackRelativePath(string trackFullPath) {
+        var fullUri = new Uri(trackFullPath);
+        var parentUri = new Uri(LibraryPath.EndsWith("\\") ? LibraryPath : LibraryPath + "\\");
+        var relativeUri = parentUri.MakeRelativeUri(fullUri);
+        return Uri.UnescapeDataString(relativeUri.ToString().Replace('/', '\\'));
     }
 }

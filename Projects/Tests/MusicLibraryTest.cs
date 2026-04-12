@@ -25,4 +25,40 @@ public class MusicLibraryTest {
         Assert.Equal(2, lib.Tracks[6].TrackCount);
         Assert.Equal(2, lib.Tracks[7].TrackCount);
     }
+
+    [Fact]
+    public void TestGetTrackRelativePath() {
+        var cases = new List<(string, string)> {
+            (@"C:\Folder\file.mp3", @"file.mp3"),
+            (@"C:\Folder\Subfolder\file.mp3", @"Subfolder\file.mp3"),
+            (@"C:\Folder\Subfolder\Another Folder\file.mp3", @"Subfolder\Another Folder\file.mp3"),
+        };
+        foreach (var (full, expected) in cases) {
+            var library1 = new MusicLibrary { LibraryPath = @"C:\Folder" };
+            var actual = library1.GetTrackRelativePath(full);
+            Assert.Equal(expected, actual);
+
+            var library2 = new MusicLibrary { LibraryPath = @"C:\Folder\" };
+            var actual2 = library2.GetTrackRelativePath(full);
+            Assert.Equal(expected, actual2);
+        }
+    }
+
+    [Fact]
+    public void TestGetTrackFileFullPath() {
+        var cases = new List<(string, string)> {
+            (@"file.mp3", @"C:\Folder\file.mp3"),
+            (@"Subfolder\file.mp3", @"C:\Folder\Subfolder\file.mp3"),
+            (@"Subfolder\Another Folder\file.mp3", @"C:\Folder\Subfolder\Another Folder\file.mp3"),
+        };
+        foreach (var (relative, expected) in cases) {
+            var library1 = new MusicLibrary { LibraryPath = @"C:\Folder" };
+            var actual = library1.GetTrackFileFullPath(new MusicTrack { Path = relative });
+            Assert.Equal(expected, actual);
+
+            var library2 = new MusicLibrary { LibraryPath = @"C:\Folder\" };
+            var actual2 = library2.GetTrackFileFullPath(new MusicTrack { Path = relative });
+            Assert.Equal(expected, actual2);
+        }
+    }
 }

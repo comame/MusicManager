@@ -37,7 +37,7 @@ internal sealed partial class LibraryPage : Page {
             ShowITLDoneNoticeText("インデックスがありません");
             return;
         }
-        MusicIndexer.GenerateITLFile(in l, UserPreference.LibraryPath());
+        MusicIndexer.GenerateITLFile(in l);
         ShowITLDoneNoticeText("完了");
     }
 

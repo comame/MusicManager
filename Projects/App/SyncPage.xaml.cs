@@ -31,7 +31,7 @@ public sealed partial class SyncPage : Page {
             return;
         }
 
-        srv = new SyncServer(library!, UserPreference.LibraryPath());
+        srv = new SyncServer(library!);
         srv.Listen();
         serverStartButton.Content = "停止";
         serverStatus.Text = "起動中";
