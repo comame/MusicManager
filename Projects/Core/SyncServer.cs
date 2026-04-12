@@ -8,9 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MusicManager.Logic;
-
-class SyncServer {
+public class SyncServer {
     private readonly HttpListener listener;
     private readonly MusicLibrary library;
 

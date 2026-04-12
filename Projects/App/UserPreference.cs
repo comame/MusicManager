@@ -5,34 +5,36 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace MusicManager;
-internal class UserPreference {
-    public static string LibraryPath {
-        get {
-            return StringGetter("LibraryPath", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
-        }
 
-        set {
-            StringSetter("LibraryPath", value);
-        }
+internal class UserPreference : IUserPreference {
+
+    public string LibraryPath()
+    {
+        return StringGetter("LibraryPath", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
     }
 
-    public static (int, int)? WindowPosition {
-        get {
-            object x = Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionX"];
-            object y = Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionY"];
-
-            if (x == null || y == null) {
-                return null;
-            }
-            return ((int)x, (int)y);
-        }
-        set {
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionX"] = value!.Value.Item1;
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionY"] = value!.Value.Item2;
-        }
+    public void SetLibraryPath(string path)
+    {
+        StringSetter("LibraryPath", path);
     }
 
-    public static void ClearAll() {
+    public (int, int)? WindowPosition()
+    {
+        object x = Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionX"];
+        object y = Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionY"];
+        if (x == null || y == null) {
+            return null;
+        }
+        return ((int)x, (int)y);
+    }
+
+    public void SetWindowPosition((int, int) position)
+    {
+        Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionX"] = position.Item1;
+        Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionY"] = position.Item2;
+    }
+
+    public void ClearAll() {
         Windows.Storage.ApplicationData.Current.LocalSettings.Values.Clear();
     }
 

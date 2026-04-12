@@ -25,7 +25,7 @@ internal sealed partial class LibraryPage : Page {
 
         IndexViewModel.Library = MusicIndexer.LoadFromIndexFile();
 
-        var musicCount = MusicIndexer.CountMusicFiles(UserPreference.LibraryPath);
+        var musicCount = MusicIndexer.CountMusicFiles(new UserPreference().LibraryPath());
         targetFileCountText.Text = $"{musicCount} 件の音楽ファイル";
     }
 

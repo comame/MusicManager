@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Shapes;
+using MusicManager.Logic;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -35,6 +36,8 @@ namespace MusicManager
         public App()
         {
             InitializeComponent();
+
+            MusicIndexer.SetUserPreference(new UserPreference());
         }
 
         /// <summary>

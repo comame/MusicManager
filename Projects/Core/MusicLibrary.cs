@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 
-namespace MusicManager.Logic;
-
 public class MusicLibrary {
     public DateTime Generated { get; set; } = DateTime.Now;
     public List<MusicTrack> Tracks { get; set; } = [];

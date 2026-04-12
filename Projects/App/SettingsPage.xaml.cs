@@ -14,7 +14,7 @@ namespace MusicManager {
         public SettingsPage() {
             InitializeComponent();
 
-            libraryPlacePickerText.Text = UserPreference.LibraryPath;
+            libraryPlacePickerText.Text = new UserPreference().LibraryPath();
         }
 
         private async void LibraryPlacePickerButtonClick(object sender, RoutedEventArgs e) {
@@ -28,7 +28,7 @@ namespace MusicManager {
             }
 
             libraryPlacePickerText.Text = folder.Path;
-            UserPreference.LibraryPath = folder.Path;
+            new UserPreference().SetLibraryPath(folder.Path);
 
             libraryPlacePickerButton.IsEnabled = true;
         }
@@ -47,7 +47,7 @@ namespace MusicManager {
             }
 
 
-            UserPreference.ClearAll();
+            new UserPreference().ClearAll();
             Frame.Navigate(typeof(SettingsPage));
         }
     }

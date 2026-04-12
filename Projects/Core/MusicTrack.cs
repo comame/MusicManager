@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MusicManager.Logic;
-
 public class  MusicTrack {
     // タグ
     public string Name { get; set; } = "";

@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace MusicManager.Logic;
-
 public class MusicIndexer {
-    public static string IndexFilePath => UserPreference.LibraryPath + "\\library.json";
-    public static string ITLFilePath => UserPreference.LibraryPath + "\\iTunes Music Library.xml";
+    public static string IndexFilePath => userPreference.LibraryPath() + "\\library.json";
+    public static string ITLFilePath => userPreference.LibraryPath() + "\\iTunes Music Library.xml";
+
+    private static IUserPreference? userPreference;
+
+    [MemberNotNull(nameof(userPreference))]
+    public static void SetUserPreference(IUserPreference p) { userPreference = p; }
 
     public static MusicLibrary? LoadFromIndexFile() {
         try {
@@ -29,7 +33,7 @@ public class MusicIndexer {
         Action<double> onProgress,
         in CancellationToken ctx
     ) {
-        var files = FindMusicFiles(UserPreference.LibraryPath);
+        var files = FindMusicFiles(userPreference.LibraryPath());
         if (files.Count == 0) {
             return null;
         }
@@ -71,7 +75,7 @@ public class MusicIndexer {
             var t = ITLTrack.FromMusicMetadata(library.Tracks[i], i);
             t.WriteTo(f);
         }
-        ITLUtil.WriteLibraryXMLFooter(f, UserPreference.LibraryPath);
+        ITLUtil.WriteLibraryXMLFooter(f, userPreference.LibraryPath());
 
         f.Flush();
     }
