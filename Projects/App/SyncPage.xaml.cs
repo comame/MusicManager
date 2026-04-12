@@ -16,7 +16,7 @@ public sealed partial class SyncPage : Page {
     public SyncPage() {
         InitializeComponent();
 
-        library = MusicIndexer.LoadFromIndexFile();
+        library = MusicIndexer.LoadFromIndexFile(UserPreference.LibraryPath());
     }
 
 
@@ -31,7 +31,7 @@ public sealed partial class SyncPage : Page {
             return;
         }
 
-        srv = new SyncServer(library!);
+        srv = new SyncServer(library!, UserPreference.LibraryPath());
         srv.Listen();
         serverStartButton.Content = "停止";
         serverStatus.Text = "起動中";

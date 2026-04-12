@@ -15,7 +15,7 @@ public sealed partial class SettingsPage : Page {
     public SettingsPage() {
         InitializeComponent();
 
-        libraryPlacePickerText.Text = UserPreference.self.LibraryPath();
+        libraryPlacePickerText.Text = UserPreference.LibraryPath();
     }
 
     private async void LibraryPlacePickerButtonClick(object sender, RoutedEventArgs e) {
@@ -29,7 +29,7 @@ public sealed partial class SettingsPage : Page {
         }
 
         libraryPlacePickerText.Text = folder.Path;
-        UserPreference.self.SetLibraryPath(folder.Path);
+        UserPreference.SetLibraryPath(folder.Path);
 
         libraryPlacePickerButton.IsEnabled = true;
     }
@@ -37,8 +37,8 @@ public sealed partial class SettingsPage : Page {
     private async void PreferenceResetButtonClick(object sender, RoutedEventArgs e) {
         var dialog = new ContentDialog() {
             XamlRoot = XamlRoot,
-            PrimaryButtonText = "���Z�b�g����",
-            CloseButtonText = "�L�����Z��",
+            PrimaryButtonText = "リセットする",
+            CloseButtonText = "キャンセル",
             DefaultButton = ContentDialogButton.Primary,
         };
 
@@ -48,7 +48,7 @@ public sealed partial class SettingsPage : Page {
         }
 
 
-        UserPreference.self.ClearAll();
+        UserPreference.ClearAll();
         Frame.Navigate(typeof(SettingsPage));
     }
 }

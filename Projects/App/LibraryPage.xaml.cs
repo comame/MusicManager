@@ -19,9 +19,9 @@ internal sealed partial class LibraryPage : Page {
 
         IndexService.page = this;
 
-        IndexViewModel.Library = MusicIndexer.LoadFromIndexFile();
+        IndexViewModel.Library = MusicIndexer.LoadFromIndexFile(UserPreference.LibraryPath());
 
-        var musicCount = MusicIndexer.CountMusicFiles(UserPreference.self.LibraryPath());
+        var musicCount = MusicIndexer.CountMusicFiles(UserPreference.LibraryPath());
         targetFileCountText.Text = $"{musicCount} 件の音楽ファイル";
     }
 
@@ -37,7 +37,7 @@ internal sealed partial class LibraryPage : Page {
             ShowITLDoneNoticeText("インデックスがありません");
             return;
         }
-        MusicIndexer.GenerateITLFile(in l);
+        MusicIndexer.GenerateITLFile(in l, UserPreference.LibraryPath());
         ShowITLDoneNoticeText("完了");
     }
 
@@ -150,6 +150,7 @@ internal class IndexService {
         GetViewModel().Status = TaskStatus.Running;
 
         var newLibrary = await Task.Run(() => MusicIndexer.UpdateIndex(
+            UserPreference.LibraryPath(),
             (progress) => {
                 page?.DispatcherQueue.TryEnqueue(() => {
                     GetViewModel().Progress = progress;

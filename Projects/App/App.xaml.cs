@@ -17,8 +17,6 @@ public partial class App : Application {
     /// </summary>
     public App() {
         InitializeComponent();
-
-        MusicIndexer.SetUserPreference(UserPreference.self);
     }
 
     /// <summary>

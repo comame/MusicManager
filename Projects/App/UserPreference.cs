@@ -2,18 +2,16 @@ using System;
 
 namespace MusicManager;
 
-internal class UserPreference : IUserPreference {
-    public static UserPreference self = new();
-
-    public string LibraryPath() {
+internal class UserPreference {
+    public static string LibraryPath() {
         return StringGetter("LibraryPath", Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
     }
 
-    public void SetLibraryPath(string path) {
+    public static void SetLibraryPath(string path) {
         StringSetter("LibraryPath", path);
     }
 
-    public (int, int)? WindowPosition() {
+    public static (int, int)? WindowPosition() {
         object x = Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionX"];
         object y = Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionY"];
         if (x == null || y == null) {
@@ -22,12 +20,12 @@ internal class UserPreference : IUserPreference {
         return ((int)x, (int)y);
     }
 
-    public void SetWindowPosition((int, int) position) {
+    public static void SetWindowPosition((int, int) position) {
         Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionX"] = position.Item1;
         Windows.Storage.ApplicationData.Current.LocalSettings.Values["WindowPositionY"] = position.Item2;
     }
 
-    public void ClearAll() {
+    public static void ClearAll() {
         Windows.Storage.ApplicationData.Current.LocalSettings.Values.Clear();
     }
 

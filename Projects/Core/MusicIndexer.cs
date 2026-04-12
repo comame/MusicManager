@@ -1,18 +1,9 @@
 using System.Runtime.Versioning;
 
 public class MusicIndexer {
-    public static string IndexFilePath => userPreference.LibraryPath() + "\\library.json";
-    public static string ITLFilePath => userPreference.LibraryPath() + "\\iTunes Music Library.xml";
-
-#pragma warning disable CS8618
-    private static IUserPreference userPreference;
-#pragma warning restore CS8618
-
-    public static void SetUserPreference(IUserPreference p) { userPreference = p; }
-
-    public static MusicLibrary? LoadFromIndexFile() {
+    public static MusicLibrary? LoadFromIndexFile(string libraryPath) {
         try {
-            using var f = new FileStream(IndexFilePath, FileMode.Open, FileAccess.Read);
+            using var f = new FileStream(IndexFilePath(libraryPath), FileMode.Open, FileAccess.Read);
             var library = MusicLibrary.FromJSONReader(f);
             return library;
         }
@@ -28,10 +19,11 @@ public class MusicIndexer {
 
     [SupportedOSPlatform("windows")]
     public static MusicLibrary? UpdateIndex(
+        string libraryPath,
         Action<double> onProgress,
         in CancellationToken ctx
     ) {
-        var files = FindMusicFiles(userPreference.LibraryPath());
+        var files = FindMusicFiles(libraryPath);
         if (files.Count == 0) {
             return null;
         }
@@ -58,22 +50,22 @@ public class MusicIndexer {
         library.FillTrackCount();
         library.SortByImportedDate();
 
-        using var f = new FileStream(IndexFilePath, FileMode.Create, FileAccess.Write);
+        using var f = new FileStream(IndexFilePath(libraryPath), FileMode.Create, FileAccess.Write);
         library.WriteJSON(f);
         f.Flush();
 
         return library;
     }
 
-    public static void GenerateITLFile(in MusicLibrary library) {
-        using var f = new StreamWriter(ITLFilePath, append: false);
+    public static void GenerateITLFile(in MusicLibrary library, string libraryPath) {
+        using var f = new StreamWriter(ITLFilePath(libraryPath), append: false);
 
         ITLUtil.WriteLibraryXMLHeader(f);
         for (var i = 0; i < library.Tracks.Count; i++) {
             var t = ITLTrack.FromMusicMetadata(library.Tracks[i], i);
             t.WriteTo(f);
         }
-        ITLUtil.WriteLibraryXMLFooter(f, userPreference.LibraryPath());
+        ITLUtil.WriteLibraryXMLFooter(f, libraryPath);
 
         f.Flush();
     }
@@ -140,6 +132,9 @@ public class MusicIndexer {
 
         return m;
     }
+
+    public static string IndexFilePath(string libraryPath) => libraryPath + "\\library.json";
+    public static string ITLFilePath(string libraryPath) => libraryPath + "\\iTunes Music Library.xml";
 
     public static string ConvertWindowsFullPathToRelativePath(string full, string parent) {
         var fullUri = new Uri(full);

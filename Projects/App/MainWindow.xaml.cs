@@ -16,7 +16,7 @@ public sealed partial class MainWindow : Window {
         ExtendsContentIntoTitleBar = true;
 
         AppWindow.ResizeClient(new Windows.Graphics.SizeInt32(800, 600));
-        var pos = UserPreference.self.WindowPosition();
+        var pos = UserPreference.WindowPosition();
         if (pos != null) {
             AppWindow.Move(new Windows.Graphics.PointInt32(pos.Value.Item1, pos.Value.Item2));
         }
@@ -24,7 +24,7 @@ public sealed partial class MainWindow : Window {
         AppWindow.Changed += (sender, args) => {
             if (args.DidPositionChange) {
                 var p = AppWindow.Position;
-                UserPreference.self.SetWindowPosition((p.X, p.Y));
+                UserPreference.SetWindowPosition((p.X, p.Y));
             }
         };
 
