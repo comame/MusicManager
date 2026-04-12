@@ -119,4 +119,39 @@ public class MusicLibrary {
         var relativeUri = parentUri.MakeRelativeUri(fullUri);
         return Uri.UnescapeDataString(relativeUri.ToString().Replace('/', '\\'));
     }
+
+    /// <summary>
+    /// ライブラリに存在しないファイルのリストを返す
+    /// </summary>
+    public List<string> GetUntrackedFiles(in List<string> allFiles) {
+        var ret = new List<string>();
+        var trackPaths = new HashSet<string>(Tracks.Select(t => t.Path));
+        foreach (var f in allFiles) {
+            var relativePath = GetTrackRelativePath(f);
+            if (!trackPaths.Contains(relativePath)) {
+                ret.Add(f);
+            }
+        }
+        return ret;
+    }
+
+    /// <summary>
+    /// ライブラリには記録されているがファイルが存在しないトラックを削除する
+    /// </summary>
+    public void TrimRemovedTracks(in List<string> allFiles) {
+        var allFilesPaths = new HashSet<string>();
+
+        foreach (var file in allFiles) {
+            var relativePath = GetTrackRelativePath(file);
+            allFilesPaths.Add(relativePath);
+        }
+
+        for (var i = Tracks.Count - 1; i >= 0; i--) {
+            if (allFilesPaths.Contains(Tracks[i].Path)) {
+                continue;
+            }
+
+            Tracks.RemoveAt(i);
+        }
+    }
 }

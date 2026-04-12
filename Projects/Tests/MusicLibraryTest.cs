@@ -61,4 +61,49 @@ public class MusicLibraryTest {
             Assert.Equal(expected, actual2);
         }
     }
+
+    [Fact]
+    public void GetUntrackedFilesTest() {
+        var library = new MusicLibrary {
+            LibraryPath = @"C:\Folder",
+            Tracks = [
+                new MusicTrack { Path = @"file1.mp3" },
+                new MusicTrack { Path = @"file2.mp3" },
+            ]
+        };
+
+        var searchResults = new List<string> {
+            @"C:\Folder\file1.mp3",
+            @"C:\Folder\file2.mp3",
+            @"C:\Folder\file3.mp3",
+        };
+
+        var untracked = library.GetUntrackedFiles(searchResults);
+        Assert.Single(untracked);
+        Assert.Equal(@"C:\Folder\file3.mp3", untracked[0]);
+    }
+
+    [Fact]
+    public void TestTrimRemovedTracks() {
+        var allFiles = new List<string> {
+            @"C:\Folder\file1.mp3",
+            @"C:\Folder\file2.mp3",
+        };
+
+        var library = new MusicLibrary {
+            LibraryPath = @"C:\Folder",
+            Tracks = [
+                new MusicTrack { Path = @"deleted1.mp3" },
+                new MusicTrack { Path = @"file1.mp3" },
+                new MusicTrack { Path = @"deleted2.mp3" },
+                new MusicTrack { Path = @"file2.mp3" },
+                new MusicTrack { Path = @"deleted3.mp3" },
+            ]
+        };
+
+        library.TrimRemovedTracks(allFiles);
+        Assert.Equal(2, library.Tracks.Count);
+        Assert.Equal(@"file1.mp3", library.Tracks[0].Path);
+        Assert.Equal(@"file2.mp3", library.Tracks[1].Path);
+    }
 }
