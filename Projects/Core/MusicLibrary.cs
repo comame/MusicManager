@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 public class MusicLibrary {
     public DateTime Generated { get; set; } = DateTime.Now;

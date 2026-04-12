@@ -1,9 +1,9 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace MusicManager;
 
@@ -22,7 +22,7 @@ internal sealed partial class LibraryPage : Page {
         IndexViewModel.Library = MusicIndexer.LoadFromIndexFile();
 
         var musicCount = MusicIndexer.CountMusicFiles(UserPreference.self.LibraryPath());
-        targetFileCountText.Text = $"{musicCount} Œ‚Ì‰¹Šyƒtƒ@ƒCƒ‹";
+        targetFileCountText.Text = $"{musicCount} ä»¶ã®éŸ³æ¥½ãƒ•ã‚¡ã‚¤ãƒ«";
     }
 
     protected override void OnNavigatedFrom(NavigationEventArgs e) {
@@ -34,11 +34,11 @@ internal sealed partial class LibraryPage : Page {
     private void ITLExecuteButtonClick(object sender, RoutedEventArgs e) {
         var l = IndexViewModel.Library;
         if (l == null) {
-            ShowITLDoneNoticeText("ƒCƒ“ƒfƒbƒNƒX‚ª‚ ‚è‚Ü‚¹‚ñ");
+            ShowITLDoneNoticeText("ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãŒã‚ã‚Šã¾ã›ã‚“");
             return;
         }
         MusicIndexer.GenerateITLFile(in l);
-        ShowITLDoneNoticeText("Š®—¹");
+        ShowITLDoneNoticeText("å®Œäº†");
     }
 
     private void IndexExecuteButton_Click(object sender, RoutedEventArgs e) {
@@ -68,7 +68,7 @@ internal partial class IndexViewModel : INotifyPropertyChanged {
     protected void OnPropertyChanged(string propertyName) =>
        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-    // ViewModel ‚ÌQÆ—pƒCƒ“ƒXƒ^ƒ“ƒXƒvƒƒpƒeƒB
+    // ViewModel ã®å‚ç…§ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£
     public double Progress {
         get { return _progress; }
         set {
@@ -98,17 +98,17 @@ internal partial class IndexViewModel : INotifyPropertyChanged {
     }
 
 
-    // UI ‚Ì•\¦—p readonly ƒvƒƒpƒeƒB
+    // UI ã®è¡¨ç¤ºç”¨ readonly ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£
     public string ExecuteButtonText {
         get {
-            return Status == TaskStatus.Running ? "ƒLƒƒƒ“ƒZƒ‹" : "Às";
+            return Status == TaskStatus.Running ? "ã‚­ãƒ£ãƒ³ã‚»ãƒ«" : "å®Ÿè¡Œ";
         }
     }
     public string DoneNoticeText {
         get {
             return Status switch {
-                TaskStatus.Completed => "Š®—¹",
-                TaskStatus.Canceled => "ƒLƒƒƒ“ƒZƒ‹‚µ‚Ü‚µ‚½",
+                TaskStatus.Completed => "å®Œäº†",
+                TaskStatus.Canceled => "ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã—ã¾ã—ãŸ",
                 _ => "",
             };
         }
@@ -130,9 +130,9 @@ internal partial class IndexViewModel : INotifyPropertyChanged {
     public string IndexedFileCountText {
         get {
             if (Library == null) {
-                return "–¢ƒCƒ“ƒfƒbƒNƒX";
+                return "æœªã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹";
             }
-            return $"{Library.Tracks.Count} Œ‚ªƒCƒ“ƒfƒbƒNƒXÏ‚İ";
+            return $"{Library.Tracks.Count} ä»¶ãŒã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ¸ˆã¿";
         }
     }
 }

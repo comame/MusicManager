@@ -5,7 +5,8 @@ using Microsoft.UI.Xaml.Media;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace MusicManager; 
+namespace MusicManager;
+
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
@@ -24,16 +25,16 @@ public sealed partial class SyncPage : Page {
         if (srv != null) {
             srv.Stop();
             srv = null;
-            serverStartButton.Content = "‹N“®";
-            serverStatus.Text = "’â~’†";
+            serverStartButton.Content = "èµ·å‹•";
+            serverStatus.Text = "åœæ­¢ä¸­";
             serverStatus.Foreground = AsSolidColorBrush("MediumVioletRed");
             return;
         }
 
         srv = new SyncServer(library!);
         srv.Listen();
-        serverStartButton.Content = "’â~";
-        serverStatus.Text = "‹N“®’†";
+        serverStartButton.Content = "åœæ­¢";
+        serverStatus.Text = "èµ·å‹•ä¸­";
         serverStatus.Foreground = AsSolidColorBrush("LightSeaGreen");
     }
     private static Brush AsSolidColorBrush(string colorName) {

@@ -1,7 +1,9 @@
 [*.cs]
 
-# –¢g—p‚Ì using
+# æœªä½¿ç”¨ã®using
 dotnet_diagnostic.IDE0005.severity = error
+dotnet_sort_system_directives_first = true
+dotnet_separete_import_directive_groups = false
 
 csharp_style_namespace_declarations = file_scoped:error
 csharp_new_line_before_open_brace = none

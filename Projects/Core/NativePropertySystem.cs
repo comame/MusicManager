@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 
 public partial class NativePropertySystem {
     public enum HRESULT : long {

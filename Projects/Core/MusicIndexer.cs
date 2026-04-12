@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 
 public class MusicIndexer {
     public static string IndexFilePath => userPreference.LibraryPath() + "\\library.json";
