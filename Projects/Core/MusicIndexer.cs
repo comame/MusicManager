@@ -1,12 +1,13 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Versioning;
 
 public class MusicIndexer {
     public static string IndexFilePath => userPreference.LibraryPath() + "\\library.json";
     public static string ITLFilePath => userPreference.LibraryPath() + "\\iTunes Music Library.xml";
 
-    private static IUserPreference? userPreference;
+#pragma warning disable CS8618
+    private static IUserPreference userPreference;
+#pragma warning restore CS8618
 
-    [MemberNotNull(nameof(userPreference))]
     public static void SetUserPreference(IUserPreference p) { userPreference = p; }
 
     public static MusicLibrary? LoadFromIndexFile() {
@@ -25,6 +26,7 @@ public class MusicIndexer {
         return files.Count;
     }
 
+    [SupportedOSPlatform("windows")]
     public static MusicLibrary? UpdateIndex(
         Action<double> onProgress,
         in CancellationToken ctx
@@ -89,6 +91,7 @@ public class MusicIndexer {
 
     // 音楽ファイルからメタデータを取得する。
     // ファイル単体から推測できない、TrackNumber は取得しない。
+    [SupportedOSPlatform("windows")]
     private static MusicTrack GetMusicMetadata(string path) {
         using var ps = PropertyStore.Open(path);
 

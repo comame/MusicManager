@@ -1,8 +1,9 @@
 using System.Runtime.InteropServices;
-
+using System.Runtime.Versioning;
 using static NativePropertySystem;
 
 // IPropertyStore のラッパー
+[SupportedOSPlatform("windows")]
 class PropertyStore : IDisposable {
     private IPropertyStore? propertyStore;
 
@@ -106,6 +107,7 @@ class PropertyStore : IDisposable {
 }
 
 // PROPVARIANT から C# の値に変換するヘルパー
+[SupportedOSPlatform("windows")]
 internal class PropVariant {
     public static bool IsEmpty(in PROPVARIANT pv) {
         return pv.varType == (ushort)VARENUM.VT_EMPTY;

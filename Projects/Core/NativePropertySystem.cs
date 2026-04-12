@@ -1,5 +1,7 @@
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
+[SupportedOSPlatform("windows")]
 public partial class NativePropertySystem {
     public enum HRESULT : long {
         S_OK = 0,
