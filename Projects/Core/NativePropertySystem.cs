@@ -1,13 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 
-public partial class NativePropertySystem
-{
-    public enum HRESULT : long
-    {
+public partial class NativePropertySystem {
+    public enum HRESULT : long {
         S_OK = 0,
     }
-    public enum GETPROPERTYSTOREFLAGS
-    {
+    public enum GETPROPERTYSTOREFLAGS {
         GPS_DEFAULT = 0,
     }
 
@@ -22,8 +19,7 @@ public partial class NativePropertySystem
 
     // propsys.h
     [ComImport, Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IPropertyStore
-    {
+    public interface IPropertyStore {
         HRESULT GetCount([Out] out uint propertyCount);
         HRESULT GetAt([In] uint propertyIndex, [Out, MarshalAs(UnmanagedType.Struct)] out PROPERTYKEY key);
         HRESULT GetValue([In, MarshalAs(UnmanagedType.Struct)] ref PROPERTYKEY key, [Out, MarshalAs(UnmanagedType.Struct)] out PROPVARIANT pv);
@@ -32,13 +28,11 @@ public partial class NativePropertySystem
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct PROPERTYKEY
-    {
+    public struct PROPERTYKEY {
         public Guid fmtid;
         public uint pid;
 
-        public PROPERTYKEY(Guid _fmtid, uint _pid) : this()
-        {
+        public PROPERTYKEY(Guid _fmtid, uint _pid) : this() {
             fmtid = _fmtid;
             pid = _pid;
         }
@@ -88,8 +82,7 @@ public partial class NativePropertySystem
 
 
     [StructLayout(LayoutKind.Explicit, Pack = 0)]
-    public struct PROPVARIANT
-    {
+    public struct PROPVARIANT {
         [FieldOffset(0)]
         public ushort varType;
         [FieldOffset(2)]
@@ -115,21 +108,18 @@ public partial class NativePropertySystem
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 0)]
-    public struct PROPVARIANT_VECTOR
-    {
+    public struct PROPVARIANT_VECTOR {
         public uint count;
         public nint p;
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct PROPVARIANT_FILETIME
-    {
+    public struct PROPVARIANT_FILETIME {
         public uint dwLowDateTime;
         public uint dwHighDateTime;
     }
 
-    public enum VARENUM : ushort
-    {
+    public enum VARENUM : ushort {
         VT_EMPTY = 0,
         VT_LPWSTR = 31,
         VT_VECTOR = 0x1000,

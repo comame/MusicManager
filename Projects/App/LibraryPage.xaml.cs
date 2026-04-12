@@ -7,17 +7,14 @@ using System.Threading.Tasks;
 
 namespace MusicManager;
 
-internal sealed partial class LibraryPage : Page
-{
-    public LibraryPage()
-    {
+internal sealed partial class LibraryPage : Page {
+    public LibraryPage() {
         InitializeComponent();
     }
 
     public IndexViewModel IndexViewModel { get; } = new IndexViewModel();
 
-    protected override void OnNavigatedTo(NavigationEventArgs e)
-    {
+    protected override void OnNavigatedTo(NavigationEventArgs e) {
         base.OnNavigatedFrom(e);
 
         IndexService.page = this;
@@ -28,18 +25,15 @@ internal sealed partial class LibraryPage : Page
         targetFileCountText.Text = $"{musicCount} 件の音楽ファイル";
     }
 
-    protected override void OnNavigatedFrom(NavigationEventArgs e)
-    {
+    protected override void OnNavigatedFrom(NavigationEventArgs e) {
         base.OnNavigatedFrom(e);
 
         IndexService.page = null;
     }
 
-    private void ITLExecuteButtonClick(object sender, RoutedEventArgs e)
-    {
+    private void ITLExecuteButtonClick(object sender, RoutedEventArgs e) {
         var l = IndexViewModel.Library;
-        if (l == null)
-        {
+        if (l == null) {
             ShowITLDoneNoticeText("インデックスがありません");
             return;
         }
@@ -47,12 +41,10 @@ internal sealed partial class LibraryPage : Page
         ShowITLDoneNoticeText("完了");
     }
 
-    private void IndexExecuteButton_Click(object sender, RoutedEventArgs e)
-    {
+    private void IndexExecuteButton_Click(object sender, RoutedEventArgs e) {
         IndexService.ExecuteButtonClick();
     }
-    private async void ShowITLDoneNoticeText(string content)
-    {
+    private async void ShowITLDoneNoticeText(string content) {
         itlDoneNoticeText.Text = content;
         itlDoneNoticeText.Visibility = Visibility.Visible;
         await Task.Delay(5 * 1000);
@@ -60,16 +52,14 @@ internal sealed partial class LibraryPage : Page
     }
 }
 
-public enum TaskStatus
-{
+public enum TaskStatus {
     Default,
     Running,
     Completed,
     Canceled,
 }
 
-internal partial class IndexViewModel : INotifyPropertyChanged
-{
+internal partial class IndexViewModel : INotifyPropertyChanged {
     private static double _progress = 0.0;
     private static TaskStatus _status = TaskStatus.Default;
     private static MusicLibrary? _library = null;
@@ -79,21 +69,17 @@ internal partial class IndexViewModel : INotifyPropertyChanged
        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     // ViewModel の参照用インスタンスプロパティ
-    public double Progress
-    {
+    public double Progress {
         get { return _progress; }
-        set
-        {
+        set {
             _progress = value;
             OnPropertyChanged(nameof(Progress));
             OnPropertyChanged(nameof(ProgressBarVisibility));
         }
     }
-    public TaskStatus Status
-    {
+    public TaskStatus Status {
         get { return _status; }
-        set
-        {
+        set {
             _status = value;
             OnPropertyChanged(nameof(Status));
             OnPropertyChanged(nameof(ExecuteButtonText));
@@ -102,11 +88,9 @@ internal partial class IndexViewModel : INotifyPropertyChanged
             OnPropertyChanged(nameof(DoneNoticeTextVisibility));
         }
     }
-    public MusicLibrary? Library
-    {
+    public MusicLibrary? Library {
         get { return _library; }
-        set
-        {
+        set {
             _library = value;
             OnPropertyChanged(nameof(Library));
             OnPropertyChanged(nameof(IndexedFileCountText));
@@ -115,50 +99,37 @@ internal partial class IndexViewModel : INotifyPropertyChanged
 
 
     // UI の表示用 readonly プロパティ
-    public string ExecuteButtonText
-    {
-        get
-        {
+    public string ExecuteButtonText {
+        get {
             return Status == TaskStatus.Running ? "キャンセル" : "実行";
         }
     }
-    public string DoneNoticeText
-    {
-        get
-        {
-            return Status switch
-            {
+    public string DoneNoticeText {
+        get {
+            return Status switch {
                 TaskStatus.Completed => "完了",
                 TaskStatus.Canceled => "キャンセルしました",
                 _ => "",
             };
         }
     }
-    public Visibility ProgressBarVisibility
-    {
-        get
-        {
+    public Visibility ProgressBarVisibility {
+        get {
             return Status == TaskStatus.Running ? Visibility.Visible : Visibility.Collapsed;
         }
     }
-    public Visibility DoneNoticeTextVisibility
-    {
-        get
-        {
-            return Status switch
-            {
+    public Visibility DoneNoticeTextVisibility {
+        get {
+            return Status switch {
                 TaskStatus.Completed => Visibility.Visible,
                 TaskStatus.Canceled => Visibility.Visible,
                 _ => Visibility.Collapsed,
             };
         }
     }
-    public string IndexedFileCountText
-    {
-        get
-        {
-            if (Library == null)
-            {
+    public string IndexedFileCountText {
+        get {
+            if (Library == null) {
                 return "未インデックス";
             }
             return $"{Library.Tracks.Count} 件がインデックス済み";
@@ -166,14 +137,11 @@ internal partial class IndexViewModel : INotifyPropertyChanged
     }
 }
 
-internal class IndexService
-{
+internal class IndexService {
     private static CancellationTokenSource? _cancelTokenSource = null;
 
-    public static async void ExecuteButtonClick()
-    {
-        if (_cancelTokenSource != null)
-        {
+    public static async void ExecuteButtonClick() {
+        if (_cancelTokenSource != null) {
             _cancelTokenSource.Cancel();
             return;
         }
@@ -182,10 +150,8 @@ internal class IndexService
         GetViewModel().Status = TaskStatus.Running;
 
         var newLibrary = await Task.Run(() => MusicIndexer.UpdateIndex(
-            (progress) =>
-            {
-                page?.DispatcherQueue.TryEnqueue(() =>
-                {
+            (progress) => {
+                page?.DispatcherQueue.TryEnqueue(() => {
                     GetViewModel().Progress = progress;
                 });
             },
@@ -195,13 +161,11 @@ internal class IndexService
         _cancelTokenSource.Dispose();
         _cancelTokenSource = null;
 
-        if (newLibrary != null)
-        {
+        if (newLibrary != null) {
             GetViewModel().Status = TaskStatus.Completed;
             GetViewModel().Library = newLibrary;
         }
-        else
-        {
+        else {
             GetViewModel().Status = TaskStatus.Canceled;
         }
 
@@ -212,8 +176,7 @@ internal class IndexService
     }
 
     public static LibraryPage? page;
-    private static IndexViewModel GetViewModel()
-    {
+    private static IndexViewModel GetViewModel() {
         return page?.IndexViewModel ?? new IndexViewModel();
     }
 }

@@ -1,5 +1,4 @@
-public interface IUserPreference
-{
+public interface IUserPreference {
 
     public string LibraryPath();
     public void SetLibraryPath(string path);

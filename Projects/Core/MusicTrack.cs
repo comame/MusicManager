@@ -1,5 +1,4 @@
-﻿public class MusicTrack
-{
+﻿public class MusicTrack {
     // タグ
     public string Name { get; set; } = "";
     public string AlbumArtist { get; set; } = "";

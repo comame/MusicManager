@@ -6,57 +6,48 @@ using System;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace MusicManager
-{
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class SettingsPage : Page
-    {
-        public SettingsPage()
-        {
-            InitializeComponent();
+namespace MusicManager; 
+/// <summary>
+/// An empty page that can be used on its own or navigated to within a Frame.
+/// </summary>
+public sealed partial class SettingsPage : Page {
+    public SettingsPage() {
+        InitializeComponent();
 
-            libraryPlacePickerText.Text = UserPreference.self.LibraryPath();
-        }
+        libraryPlacePickerText.Text = UserPreference.self.LibraryPath();
+    }
 
-        private async void LibraryPlacePickerButtonClick(object sender, RoutedEventArgs e)
-        {
-            libraryPlacePickerButton.IsEnabled = false;
+    private async void LibraryPlacePickerButtonClick(object sender, RoutedEventArgs e) {
+        libraryPlacePickerButton.IsEnabled = false;
 
-            var picker = new FolderPicker(libraryPlacePickerButton.XamlRoot.ContentIslandEnvironment.AppWindowId);
-            var folder = await picker.PickSingleFolderAsync();
-            if (folder == null)
-            {
-                libraryPlacePickerButton.IsEnabled = true;
-                return;
-            }
-
-            libraryPlacePickerText.Text = folder.Path;
-            UserPreference.self.SetLibraryPath(folder.Path);
-
+        var picker = new FolderPicker(libraryPlacePickerButton.XamlRoot.ContentIslandEnvironment.AppWindowId);
+        var folder = await picker.PickSingleFolderAsync();
+        if (folder == null) {
             libraryPlacePickerButton.IsEnabled = true;
+            return;
         }
 
-        private async void PreferenceResetButtonClick(object sender, RoutedEventArgs e)
-        {
-            var dialog = new ContentDialog()
-            {
-                XamlRoot = XamlRoot,
-                PrimaryButtonText = "���Z�b�g����",
-                CloseButtonText = "�L�����Z��",
-                DefaultButton = ContentDialogButton.Primary,
-            };
+        libraryPlacePickerText.Text = folder.Path;
+        UserPreference.self.SetLibraryPath(folder.Path);
 
-            var result = await dialog.ShowAsync();
-            if (result != ContentDialogResult.Primary)
-            {
-                return;
-            }
+        libraryPlacePickerButton.IsEnabled = true;
+    }
 
+    private async void PreferenceResetButtonClick(object sender, RoutedEventArgs e) {
+        var dialog = new ContentDialog() {
+            XamlRoot = XamlRoot,
+            PrimaryButtonText = "���Z�b�g����",
+            CloseButtonText = "�L�����Z��",
+            DefaultButton = ContentDialogButton.Primary,
+        };
 
-            UserPreference.self.ClearAll();
-            Frame.Navigate(typeof(SettingsPage));
+        var result = await dialog.ShowAsync();
+        if (result != ContentDialogResult.Primary) {
+            return;
         }
+
+
+        UserPreference.self.ClearAll();
+        Frame.Navigate(typeof(SettingsPage));
     }
 }

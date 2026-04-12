@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
-public class SyncServer
-{
+public class SyncServer {
     private readonly HttpListener listener;
     private readonly MusicLibrary library;
 
-    public SyncServer(MusicLibrary library)
-    {
+    public SyncServer(MusicLibrary library) {
         this.library = library;
 
         listener = new();
@@ -23,40 +14,32 @@ public class SyncServer
         listener.IgnoreWriteExceptions = true;
     }
 
-    public async void Listen()
-    {
+    public async void Listen() {
         listener.Start();
 
-        while (listener.IsListening)
-        {
-            try
-            {
+        while (listener.IsListening) {
+            try {
                 var ctx = await listener.GetContextAsync();
                 _ = Task.Run(() => HandleRequest(ctx));
             }
-            catch (HttpListenerException)
-            {
+            catch (HttpListenerException) {
                 break;
             }
-            catch (ObjectDisposedException)
-            {
+            catch (ObjectDisposedException) {
                 break;
             }
         }
     }
 
-    public void Stop()
-    {
+    public void Stop() {
         listener.Stop();
     }
 
-    private void HandleRequest(HttpListenerContext ctx)
-    {
+    private void HandleRequest(HttpListenerContext ctx) {
         var req = ctx.Request;
         var res = ctx.Response;
 
-        if (req.HttpMethod != "GET")
-        {
+        if (req.HttpMethod != "GET") {
             res.StatusCode = (int)HttpStatusCode.NotFound;
             res.OutputStream.Close();
             return;
@@ -64,15 +47,12 @@ public class SyncServer
 
         Debug.WriteLine($"request {req.Url!.AbsolutePath}");
 
-        try
-        {
-            if (req.Url.AbsolutePath == "/library.json")
-            {
+        try {
+            if (req.Url.AbsolutePath == "/library.json") {
                 RespondWithFile(res, MusicIndexer.IndexFilePath);
                 return;
             }
-            if (req.Url.AbsolutePath.StartsWith("/track/"))
-            {
+            if (req.Url.AbsolutePath.StartsWith("/track/")) {
                 var persistentID = req.Url.AbsolutePath[7..];
                 Debug.WriteLine($"persistentID {persistentID}");
                 RespondWithMusicTrackFile(res, persistentID);
@@ -81,32 +61,27 @@ public class SyncServer
 
             throw new FileNotFoundException();
         }
-        catch (FileNotFoundException)
-        {
+        catch (FileNotFoundException) {
             res.StatusCode = (int)HttpStatusCode.NotFound;
             res.OutputStream.Close();
             return;
         }
     }
 
-    private void RespondWithMusicTrackFile(HttpListenerResponse res, string persistentID)
-    {
+    private void RespondWithMusicTrackFile(HttpListenerResponse res, string persistentID) {
         var track = library.Tracks.Find(t => t.PersistentID == persistentID);
-        if (track == null)
-        {
+        if (track == null) {
             throw new FileNotFoundException();
         }
 
         RespondWithFile(res, track.Path);
     }
 
-    private static void RespondWithFile(HttpListenerResponse res, string filePath)
-    {
+    private static void RespondWithFile(HttpListenerResponse res, string filePath) {
         using var f = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
         var contentType = "application/octet-stream";
-        switch (Path.GetExtension(filePath).ToLower())
-        {
+        switch (Path.GetExtension(filePath).ToLower()) {
             case ".json":
                 contentType = "application/json";
                 break;

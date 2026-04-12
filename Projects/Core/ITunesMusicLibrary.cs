@@ -1,7 +1,6 @@
 ﻿using System.Text;
 
-internal class ITLTrack
-{
+internal class ITLTrack {
     public int TrackID = 0;
     public ulong Size = 0;
     public ulong TotalTime = 0;
@@ -27,10 +26,8 @@ internal class ITLTrack
     public string Kind = "";
     public string Location = "";
 
-    public static ITLTrack FromMusicMetadata(MusicTrack m, int trackID)
-    {
-        var track = new ITLTrack()
-        {
+    public static ITLTrack FromMusicMetadata(MusicTrack m, int trackID) {
+        var track = new ITLTrack() {
             TrackID = trackID,
             Size = m.SizeBytes,
             TotalTime = m.DurationMilliSeconds,
@@ -57,22 +54,17 @@ internal class ITLTrack
     }
 
     // iTunes Music Library.xml の track 情報部分を書き出す
-    public void WriteTo(StreamWriter w)
-    {
-        var addIntegerKeyIfNotZero = (ref string s, string key, int value) =>
-        {
-            if (value == 0)
-            {
+    public void WriteTo(StreamWriter w) {
+        var addIntegerKeyIfNotZero = (ref string s, string key, int value) => {
+            if (value == 0) {
                 return;
             }
 
             s += $"\t\t\t<key>{key}</key><integer>{value}</integer>\n";
         };
 
-        var addStringKeyIfNotEmpty = (ref string s, string key, string value, string tag = "string") =>
-        {
-            if (value == "")
-            {
+        var addStringKeyIfNotEmpty = (ref string s, string key, string value, string tag = "string") => {
+            if (value == "") {
                 return;
             }
 
@@ -110,26 +102,21 @@ internal class ITLTrack
     }
 }
 
-internal class ITLUtil
-{
-    public static long CalculateAppleEpoc(in DateTime dt)
-    {
+internal class ITLUtil {
+    public static long CalculateAppleEpoc(in DateTime dt) {
         var appleEpoc = dt.AddYears(66);
         var unixEpoc = ((DateTimeOffset)appleEpoc).ToUnixTimeSeconds();
         return unixEpoc;
     }
 
-    public static string ConvertPathToLocation(string path)
-    {
+    public static string ConvertPathToLocation(string path) {
         var parts = path.Split("\\");
         var location = "file://localhost";
 
-        for (var i = 0; i < parts.Count(); i++)
-        {
+        for (var i = 0; i < parts.Count(); i++) {
             location += "/";
             // ドライブ文字はURLエンコードできない
-            if (i == 0)
-            {
+            if (i == 0) {
                 location += parts[i];
                 continue;
             }
@@ -140,21 +127,18 @@ internal class ITLUtil
         return location;
     }
 
-    public static string ToUTCDatetimeString(in DateTime dt)
-    {
+    public static string ToUTCDatetimeString(in DateTime dt) {
         return dt.AddHours(-9).ToString("yyyy-MM-ddTHH:mm:ssZ");
     }
 
-    public static string CalculatePersistentID(string seed)
-    {
+    public static string CalculatePersistentID(string seed) {
         var bytes = Encoding.UTF8.GetBytes(seed);
         var hash = System.Security.Cryptography.MD5.HashData(bytes);
         var hex = Convert.ToHexString(hash).ToUpper();
         return hex[..16];
     }
 
-    public static void WriteLibraryXMLHeader(StreamWriter w)
-    {
+    public static void WriteLibraryXMLHeader(StreamWriter w) {
         var date = ToUTCDatetimeString(DateTime.Now);
         var libraryPersistentID = "38CAD4A721A4B4EB";
 
@@ -178,8 +162,7 @@ internal class ITLUtil
         w.Write(s);
     }
 
-    public static void WriteLibraryXMLFooter(StreamWriter w, string musicFolder)
-    {
+    public static void WriteLibraryXMLFooter(StreamWriter w, string musicFolder) {
         var s = "";
 
         s += "\t</dict>\n";
@@ -196,8 +179,7 @@ internal class ITLUtil
         w.Write(s);
     }
 
-    public static string EscapeXMLString(string s)
-    {
+    public static string EscapeXMLString(string s) {
         return s.Replace("&", "&amp;")
             .Replace("<", "&lt;")
             .Replace(">", "&gt;")
